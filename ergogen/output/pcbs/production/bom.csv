@@ -1,0 +1,6 @@
+﻿Designator,Footprint,Quantity,Value,LCSC Part #
+"D1, D10, D11, D12, D13, D14, D15, D16, D17, D2, D3, D4, D5, D6, D7, D8, D9",diode_tht_sod123,17,,
+"H1, H2, H3, H4",mounting_hole_plated,4,,
+JST1,battery_connector_jst_ph_2,1,,
+PWR1,power_switch_smd_side,1,,
+RST1,reset_switch_tht_top,1,,

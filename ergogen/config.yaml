@@ -1,0 +1,350 @@
+meta:
+  engine: 4.1.0
+points:
+  zones:
+    matrix:
+      anchor.shift: [50,-100]
+      columns:
+        pinky:
+          key:
+            spread: 18
+            splay: 15
+            origin: [0, -17]
+            column_net: C0
+        ring:
+          key:
+            spread: 18
+            stagger: 17
+            splay: -10
+            origin: [0, -17]
+            column_net: C1
+        middle:
+          key:
+            spread: 18
+            stagger: 5.667
+            splay: -5
+            origin: [0, -17]
+            column_net: C2
+        index:
+          key:
+            spread: 18
+            stagger: -5.667
+            origin: [0, -17]
+            column_net: C3
+        inner:
+          key:
+            spread: 18
+            stagger: -2.833
+            origin: [0, -17]
+            column_net: C4
+      rows:
+        bottom:
+          padding: 17
+          row_net: R2
+        home:
+          padding: 17
+          row_net: R1
+        top:
+          padding: 17
+          row_net: R0
+      key:
+        nets:
+          colrow: "{{column_net}}_{{row_net}}"
+    thumb:
+      anchor:
+        ref: matrix_index_bottom
+        shift: [11, -24]
+      columns:
+        first:
+          key:
+            splay: -10
+            column_net: C4
+        second:
+          key:
+            spread: 18
+            splay: -15
+            origin: [-9, -9.5]
+            column_net: C5
+      rows:
+        only:
+          padding: 17
+          row_net: R3
+      key:
+        nets:
+          colrow: "{{column_net}}_{{row_net}}"
+outlines:
+  _raw:
+    - what: rectangle
+      where: true
+      size: [18, 17]
+  _active_area:
+    - name: _raw
+    - operation: add
+      what: polygon
+      points: 
+        - ref: matrix_pinky_top
+          shift: [9, 8.5]
+        - ref: matrix_pinky_top
+          shift: [20, 8.5]
+        - ref: matrix_ring_top
+          shift: [9, 8.5]
+        - ref: matrix_ring_top
+          shift: [20, 8.5]
+        - ref: matrix_inner_bottom
+          shift: [9, -8.5]
+        - ref: matrix_inner_bottom
+          shift: [9, -20]
+        - ref: thumb_second_only
+          shift: [-9, 8.5]
+        - ref: thumb_second_only
+          shift: [-9, -8.5]
+        - ref: thumb_first_only
+          shift: [9, -8.5]
+        - ref: thumb_first_only
+          shift: [-9, 8.5]
+        - ref: matrix_inner_bottom
+          shift: [-9, -8.5]
+        - ref: matrix_middle_home
+        - ref: matrix_middle_bottom
+          shift: [-9, -8.5]
+        - ref: matrix_middle_bottom
+          shift: [-20, -8.5]
+        - ref: matrix_ring_bottom
+          shift: [-9, -8.5]
+        - ref: matrix_ring_bottom
+          shift: [-20, -8.5]
+    - operation: add
+      what: polygon
+      points:
+        - ref: matrix_pinky_top
+        - ref: matrix_pinky_bottom
+          shift: [9, -8.5]
+        - ref: thumb_first_only
+          shift: [-9, -8.5]
+        - ref: thumb_first_only
+        - ref: matrix_inner_top
+      expand: 0.5
+      fillet: 1
+  _pcb_body:
+    - name: _active_area
+    - operation: add
+      what: polygon
+      points:
+        - ref: matrix_inner_home
+          shift: [0, 7.5]
+        - ref: matrix_inner_home
+          shift: [31.1343, 7.5]
+        - ref: matrix_inner_bottom
+          shift: [31.1343, -9.593]
+        - ref: thumb_second_only
+          shift: [9.5, 8.5]
+        - ref: thumb_first_only
+      fillet: 1
+  _pcb_body_fill:
+    - name: _pcb_body
+      expand: 1
+  _case_wall:
+    - name: _pcb_body
+      expand: 1.2
+      joints: 1
+      fillet: 1
+    - operation: subtract
+      name: _pcb_body
+  _mounting_1:
+    - what: circle
+      where.ref: matrix_pinky_top
+      radius: 3
+      adjust.shift: [10, -7]
+  _mounting_2:
+    - what: circle
+      where.ref: matrix_index_top
+      radius: 3
+      adjust.shift: [9, -7]
+  _mounting_3:
+    - what: circle
+      where.ref: matrix_pinky_home
+      radius: 3
+      adjust.shift: [10, -7]
+  _mounting_4:
+    - what: circle
+      where.ref: matrix_index_home
+      radius: 3
+      adjust.shift: [9, -7]
+  _mountings:
+    - name: _mounting_1
+    - name: _mounting_2
+    - name: _mounting_3
+    - name: _mounting_4
+  _mountings_negative:
+    - name: _mounting_1
+    - name: _mounting_2
+    - name: _mounting_3
+    - name: _mounting_4
+      expand: -1.575
+  _switch_cutout:
+    - what: rectangle
+      where: true
+      size: [14, 14]
+  _plate:
+    - name: _active_area
+    - operation: subtract
+      name: _switch_cutout
+  _plate_wall:
+    - name: _active_area
+      expand: 1.2
+    - operation: subtract
+      name: _active_area
+pcbs:
+  simple34_v2:
+    template: kicad8
+    outlines:
+      main:
+        outline: _pcb_body
+    footprints:
+      choc_hotswap:
+        what: ceoloide/switch_choc_v1_v2
+        where: true
+        params:
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+          include_corner_marks: true
+          include_keycap: true
+          include_traces_vias: false
+          keycap_height: 16.5
+          keycap_width: 17.5
+          reversible: true
+          hotswap: true
+          solder: true
+          choc_v2_support: false
+          outer_pad_width_front: 2.0
+          outer_pad_width_back: 2.0
+      diode:
+        what: ceoloide/diode_tht_sod123
+        where: true
+        params:
+          reversible: true
+          include_thru_hole_smd_pads: true
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, -3.8]
+          rotate: 180
+      mcu:
+        what: ceoloide/mcu_supermini_nrf52840
+        where.ref: matrix_inner_home
+        params:
+          reverse_mount: true
+          reversible: true
+          P21: C0
+          P20: C1
+          P19: C2
+          P18: C3
+          P15: C4
+          P14: C5
+          P9: R3
+          P8: R2
+          P7: R1
+          P6: R0
+        adjust.shift: [21, -10]
+      power:
+        what: ceoloide/power_switch_smd_side
+        where.ref: thumb_second_only
+        params:
+          reversible: true
+          from: BAT_P
+          to: RAW
+        adjust.shift: [7.45, 16]
+      reset:
+        what: ceoloide/reset_switch_tht_top
+        where.ref: matrix_inner_bottom
+        params.reversible: true
+        adjust:
+          shift: [15, -12]
+      polarity:
+        what: ceoloide/utility_text
+        where.ref: matrix_inner_bottom
+        params:
+          reversible: true
+          text: '- +'
+        adjust.shift: [21.2, -10.4]
+      battery:
+        what: ceoloide/battery_connector_jst_ph_2
+        where.ref: matrix_inner_bottom
+        params:
+          reversible: true
+          include_silkscreen: false
+          include_fabrication: false
+        adjust.shift: [21.2, -12]
+      mounting_1:
+        what: ceoloide/mounting_hole_plated
+        where.ref: matrix_pinky_top
+        params:
+          drill: 2
+          outline: 1
+        adjust.shift: [10, -7]
+      mounting_2:
+        what: ceoloide/mounting_hole_plated
+        where.ref: matrix_index_top
+        params:
+          drill: 2
+          outline: 1
+        adjust.shift: [9, -7]
+      mounting_3:
+        what: ceoloide/mounting_hole_plated
+        where.ref: matrix_pinky_home
+        params:
+          drill: 2
+          outline: 1
+        adjust.shift: [10, -7]
+      mounting_4:
+        what: ceoloide/mounting_hole_plated
+        where.ref: matrix_index_home
+        params:
+          drill: 2
+          outline: 1
+        adjust.shift: [9, -7]
+cases:
+  left:
+    - name: _pcb_body_fill
+      extrude: 1.6
+    - name: _case_wall
+      extrude: 5.05
+    - name: _mountings
+      extrude: 1.85
+      shift: [0, 0, 1.6]
+    - operation: subtract
+      name: _mountings_negative
+      extrude: 2.05
+      shift: [0, 0, 1.4]
+  _right:
+    - name: _pcb_body_fill
+      extrude: 1.6
+    - name: _case_wall
+      extrude: 5.05
+      shift: [0, 0, -3.45]
+    - name: _mountings
+      extrude: 1.85
+      shift: [0, 0, -1.85]
+    - operation: subtract
+      name: _mountings_negative
+      extrude: 2.05
+      shift: [0, 0, -1.85]
+  right:
+    - what: case
+      name: _right
+      rotate: [0, 180, 0]
+  plate_left:
+    - name: _plate_wall
+      extrude: 2.2
+    - name: _plate
+      extrude: 1.2
+      shift: [0, 0, 1]
+  _plate_right:
+    - name: _plate_wall
+      extrude: 2.2
+    - name: _plate
+      extrude: 1.2
+  plate_right:
+    - what: case
+      name: _plate_right
+      rotate: [0, 180, 0]

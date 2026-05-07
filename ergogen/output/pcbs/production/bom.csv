@@ -3,4 +3,4 @@
 "H1, H2, H3, H4",mounting_hole_plated,4,,
 JST1,battery_connector_jst_ph_2,1,,
 PWR1,power_switch_smd_side,1,,
-RST1,reset_switch_tht_top,1,,
+SW1,reset_smd,1,,

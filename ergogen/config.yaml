@@ -1,10 +1,12 @@
 meta:
-  engine: 4.2.1
+  engine: 4.2.0
 
 units:
   # promicro/nice nano size
   px: 18
   py: 33
+
+  skt: 19.05
 
 points:
   zones:
@@ -13,31 +15,34 @@ points:
       columns:
         pinky:
           key:
-            splay: 15
+            splay: 8
             origin: [0, -17]
             column_net: C0
         ring:
           key:
-            stagger: 17
-            splay: -10
+            stagger: 0.66cy
+            splay: -4
             origin: [0, -17]
             column_net: C1
         middle:
           key:
-            stagger: 5.667
-            splay: -5
+            stagger: 0.25cy
+            splay: -4
             origin: [0, -17]
             column_net: C2
         index:
           key:
-            stagger: -5.667
+            stagger: -0.25cy
             origin: [0, -17]
             column_net: C3
         inner:
           key:
-            stagger: -2.833
+            stagger: -0.1cy
             origin: [0, -17]
             column_net: C4
+          rows:
+            top:
+              adjust.rotate: 180
       rows:
         bottom:
           row_net: R2
@@ -84,103 +89,102 @@ points:
     mcu: &mcu
       anchor:
         ref.aggregate.parts: [matrix_inner_home, matrix_inner_bottom]
-        shift: [(cx/2) + 10.5, 4]
+        shift: [0.5cx + 10.5, 4]
       key:
-          tags:
-            - mcu
-          height: 0
-          width: 0
+        tags:
+          - mcu
+        height: 0
+        width: 0
+
+    tenting_puck: &tent
+      anchor:
+        ref: matrix_index_home
+        shift: [-0.5cx+0.5, 0.5cy-2]
+      key:
+        tags:
+          - tent
+        height: 0
+        width: 0
     
-    screw_top_left: &screws
+    screw_top: &screws
       anchor:
-        ref: matrix_pinky_top
-        shift: [(cx/2)+3, (cy/2)+3]
+        ref: [tenting_puck]
+        shift: [0, skt]
       key:
-          tags:
-            - screws
-          height: 0
-          width: 0
-    screw_top_right:
+        tags:
+          - screws
+        height: 0
+        width: 0
+    screw_left:
+      <<: *screws
       anchor:
-        ref: matrix_inner_top
-        shift: [-(cx/2)+3, (cy/2)+3]
-      key:
-          tags:
-            - screws
-          height: 0
-          width: 0
-    screw_bottom_left:
+        ref: [tenting_puck]
+        shift: [-skt, 0]
+    screw_bottom:
+      <<: *screws
       anchor:
-        ref: matrix_pinky_bottom
-        shift: [(cx/2)+3, -(cy/2)+4]
-      key:
-          tags:
-            - screws
-          height: 0
-          width: 0
-    screw_bottom_right:
+        ref: [tenting_puck]
+        shift: [0, -skt]
+    screw_right:
+      <<: *screws
       anchor:
-        ref.aggregate.parts: [thumb_first_only, thumb_second_only]
-        shift: [0, 6]
-      key:
-          tags:
-            - screws
-          height: 0
-          width: 0
+        ref: [tenting_puck]
+        shift: [skt, 0]
     
     non_slip_top_left: &non_slip
-      anchor.ref: matrix_pinky_top
+      anchor:
+        ref: matrix_pinky_top
+        shift: [-0.25cx, 0.25cy]
       key:
         tags:
           - non_slip
         height: 0
         width: 0
-    non_slip_top_middle: 
-      anchor.ref: matrix_middle_top
-      key:
-        tags:
-          - non_slip
-        height: 0
-        width: 0
+    non_slip_top_middle:
+      <<: *non_slip
+      anchor:
+        ref: matrix_middle_top
+        shift: [0, 0.25cy]
     non_slip_top_right: 
-      anchor.ref: matrix_inner_top
-      key:
-        tags:
-          - non_slip
-        height: 0
-        width: 0
-    non_slip_mcu: 
+      <<: *non_slip
+      anchor:
+        ref: matrix_inner_top
+        shift: [-0.25cx, -0.25cy]
+    non_slip_mcu:
+      <<: *non_slip
       anchor:
         ref: [mcu]
-        shift: [0, (py/2)-(cy/2)]
-      key:
-        tags:
-          - non_slip
-        height: 0
-        width: 0
+        shift: [0.5px-0.25cx, 0.5py-0.25cy]
     non_slip_bottom_right: 
-      anchor.ref: thumb_second_only
-      key:
-        tags:
-          - non_slip
-        height: 0
-        width: 0
-    non_slip_bottom_middle: 
+      <<: *non_slip
+      anchor:
+        ref: thumb_second_only
+        shift: [0.25cx, -0.25cy]
+    non_slip_bottom_middle:
+      <<: *non_slip 
       anchor:
         ref: matrix_middle_bottom
-        shift: [0, -(cy/2)-15]
+        shift: [0, -0.5cy-15]
+    non_slip_bottom_left:
+      <<: *non_slip
+      anchor:
+        ref: matrix_pinky_bottom
+        shift: [-0.25cx, -0.25cy]
+    
+    cover_left: &cover
+      anchor:
+        ref: thumb_second_only
+        shift: [-0.5cx+4, 0.5cy+4.5]
       key:
         tags:
-          - non_slip
+          - cover
         height: 0
         width: 0
-    non_slip_bottom_left: 
-      anchor.ref: matrix_pinky_bottom
-      key:
-        tags:
-          - non_slip
-        height: 0
-        width: 0
+    cover_right:
+      <<: *cover
+      anchor:
+        ref: thumb_second_only
+        shift: [0.5cx-3, 0.5cy+4.5]
 
 outlines:
   _raw:
@@ -193,43 +197,37 @@ outlines:
         - type: arc
           points:
             - ref: matrix_pinky_top
-              shift: [-(cx/2), (cy/2)]
+              shift: [-0.5cx, 0.5cy]
             - ref: matrix_ring_top
-              shift: [-(cx/2), (cy/2)]
-            - ref: matrix_middle_top
-              shift: [(cx/2), (cy/2)+1]
-        - type: arc
-          points:
-            - ref: matrix_index_top
-              shift: [(cx/2), (cy/2)+4]
+              shift: [-0.5cx, 0.5cy]
             - ref: matrix_inner_top
-              shift: [(cx/2), (cy/2)]
+              shift: [-0.5cx, -0.5cy]
         - type: line
           points:
             - ref: [mcu]
-              shift: [-(px/2) - 1.5, (py/2)]
+              shift: [-0.5px - 1.5, 0.5py]
         - type: line
           points:
             - ref: [mcu]
-              shift: [(px/2), (py/2)]
+              shift: [0.5px, 0.5py]
         - type: line
           points:
             - ref: thumb_second_only
-              shift: [(cx/2), (cy/2)+7.8735]
+              shift: [0.5cx, 0.5cy+7.8735]
         - type: line
           points:
             - ref: thumb_second_only
-              shift: [(cx/2), -(cy/2)]
+              shift: [0.5cx, -0.5cy]
         - type: arc
           points:
             - ref: thumb_first_only
-              shift: [-(cx/2), -(cy/2)]
+              shift: [-0.5cx, -0.5cy]
             - ref: matrix_pinky_bottom
-              shift: [(cx/2), -(cy/2)]
+              shift: [-0.5cx, -0.5cy]
         - type: line
           points:
-            - ref: matrix_pinky_bottom
-              shift: [-(cx/2), -(cy/2)]
+            - ref: matrix_pinky_top
+              shift: [-0.5cx, 0.5cy]
       expand: 0.5
       fillet: 1
   _wall:
@@ -241,23 +239,45 @@ outlines:
     - what: rectangle
       where: [mcu]
       size: [10, 7]
-      adjust.shift: [(px/2)-1.9, -(py/2)-5]
+      adjust.shift: [0.5px-1.9, -0.5py-5]
   _heat_inserts:
     - what: circle
       where: [screws]
-      radius: 3.5
+      radius: 2.5
   _heat_inserts_negative:
     - what: circle
       where: [screws]
-      radius: 1.45
+      radius: 1.5
   _non_slip:
     - what: circle
       where: [non_slip]
-      radius: 4.5
+      radius: 4.1
+  _mcu_cover:
+    - what: rectangle
+      where: [mcu]
+      size: [px, py]
+    - what: polygon
+      points:
+        - ref: [mcu]
+          shift: [-0.5px, -0.5py]
+        - ref: [mcu]
+          shift: [-0.5px, -0.5py-10]
+        - ref: thumb_second_only
+          shift: [0.5cx, 0.5cy]
+        - ref: thumb_second_only
+          shift: [0.5cx, 0.5cy+7.8735]
+        - ref: [mcu]
+          shift: [0.5px, -0.5py]
+    - operation: subtract
+      what: rectangle
+      where.ref: thumb_second_only
+      size: [cx, cy]
+      adjust.shift: [0, 1.5]
+      fillet: 1
     - operation: subtract
       what: circle
-      where: [non_slip]
-      radius: 4
+      where: [cover]
+      radius: 1
 pcbs:
   simple34_v2:
     template: kicad8
@@ -306,12 +326,15 @@ pcbs:
         adjust:
           shift: [0, 4.7]
           rotate: 180
+      tenting_puck:
+        what: splitkb/tenting_puck
+        where: [tenting_puck]
       mounting:
         what: ceoloide/mounting_hole_plated
-        where: [screws]
+        where: [cover]
         params:
           drill: 2
-          outline: 0.8
+          outline: 1
       power_switch:
         what: ceoloide/power_switch_smd_side
         where: [mcu]
@@ -321,14 +344,13 @@ pcbs:
           from: BAT_P
           to: RAW
         adjust:
-          shift: [(px/2)-1.9, -(py/2)-5]
+          shift: [0.5px-1.9, -0.5py-5]
       reset:
         what: terence/reset
         where: [mcu]
         params.reversible: true
         adjust:
-          shift: [2, -(py/2)-3]
-          rotate: 90
+          shift: [0, -0.5py-3]
       battery:
         what: ceoloide/battery_connector_jst_ph_2
         where: [mcu]
@@ -337,46 +359,54 @@ pcbs:
           include_fabrication: false
           include_courtyard: false
         adjust:
-          shift: [-(px/2)+2, -(py/2)-2]
+          shift: [-0.5px+2, -0.5py-2]
           rotate: 90
 cases:
   left:
     - name: _wall
-      extrude: 5.05
+      extrude: 6.6
+      fillet: 0.5
     - name: _pcb
-      extrude: 1.6
+      extrude: 2
     - name: _heat_inserts
-      extrude: 1.85
-      shift: [0, 0, 1.85]
-    - name: _non_slip
-      extrude: 0.8
-      shift: [0, 0, -0.8]
+      extrude: 2
+      shift: [0, 0, 2]
+    - operation: subtract
+      name: _non_slip
+      extrude: 1
     - operation: subtract
       name: _heat_inserts_negative
-      extrude: 5.05
+      extrude: 3
+      shift: [0, 0, 1]
     - operation: subtract
       name: _power_switch
-      extrude: 1.6
-      shift: [0, 0, 3.45]
+      extrude: 2.6
+      shift: [0, 0, 4]
   _right:
     - name: _wall
-      extrude: 5.05
+      extrude: 6.6
+      fillet: 0.5
     - name: _pcb
-      extrude: 1.6
-      shift: [0, 0, 3.45]
+      extrude: 2
+      shift: [0, 0, 4.6]
     - name: _heat_inserts
-      extrude: 1.85
-      shift: [0, 0, 1.6]
-    - name: _non_slip
-      extrude: 0.8
-      shift: [0, 0, 5.05]
+      extrude: 2
+      shift: [0, 0, 2.6]
+    - operation: subtract
+      name: _non_slip
+      extrude: 1
+      shift: [0, 0, 5.6]
     - operation: subtract
       name: _heat_inserts_negative
-      extrude: 5.05
+      extrude: 3
+      shift: [0, 0, 2.6]
     - operation: subtract
       name: _power_switch
-      extrude: 1.6
+      extrude: 2.6
   right:
     - what: case
       name: _right
       rotate: [0, 180, 0]
+  mcu_cover:
+    - name: _mcu_cover
+      extrude: 2

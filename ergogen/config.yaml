@@ -96,6 +96,21 @@ points:
         height: 0
         width: 0
 
+    intercept: &intercept
+      anchor:
+        aggregate:
+          method: intersect
+          parts:
+            - ref: thumb_second_only
+              shift: [0.5cx, 0.5cy]
+            - ref: [mcu]
+              shift: [0.5px, -0.5py]
+      key:
+        tags:
+          - intercept
+        height: 0
+        width: 0
+
     tenting_puck: &tent
       anchor:
         ref: matrix_index_home
@@ -212,8 +227,7 @@ outlines:
               shift: [0.5px, 0.5py]
         - type: line
           points:
-            - ref: thumb_second_only
-              shift: [0.5cx, 0.5cy+7.8735]
+            - ref: [intercept]
         - type: line
           points:
             - ref: thumb_second_only
@@ -230,11 +244,14 @@ outlines:
               shift: [-0.5cx, 0.5cy]
       expand: 0.5
       fillet: 1
-  _wall:
+  _base:
     - name: _pcb
+      expand: 0.2
+  _wall:
+    - name: _base
       expand: 1.6
     - operation: subtract
-      name: _pcb
+      name: _base
   _power_switch:
     - what: rectangle
       where: [mcu]
@@ -264,8 +281,7 @@ outlines:
           shift: [-0.5px, -0.5py-10]
         - ref: thumb_second_only
           shift: [0.5cx, 0.5cy]
-        - ref: thumb_second_only
-          shift: [0.5cx, 0.5cy+7.8735]
+        - ref: [intercept]
         - ref: [mcu]
           shift: [0.5px, -0.5py]
     - operation: subtract
@@ -365,8 +381,8 @@ cases:
   left:
     - name: _wall
       extrude: 6.6
-      fillet: 0.5
-    - name: _pcb
+      fillet.outer: [1, 0.5]
+    - name: _base 
       extrude: 2
     - name: _heat_inserts
       extrude: 2
@@ -380,13 +396,13 @@ cases:
       shift: [0, 0, 1]
     - operation: subtract
       name: _power_switch
-      extrude: 2.6
-      shift: [0, 0, 4]
+      extrude: 1.6
+      shift: [0, 0, 5]
   _right:
     - name: _wall
       extrude: 6.6
-      fillet: 0.5
-    - name: _pcb
+      fillet.outer: [0.5, 1]
+    - name: _base
       extrude: 2
       shift: [0, 0, 4.6]
     - name: _heat_inserts
@@ -402,7 +418,7 @@ cases:
       shift: [0, 0, 2.6]
     - operation: subtract
       name: _power_switch
-      extrude: 2.6
+      extrude: 1.6
   right:
     - what: case
       name: _right

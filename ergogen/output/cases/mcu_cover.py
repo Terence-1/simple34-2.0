@@ -11,32 +11,41 @@ def _outer_wire_edges(result, selector):
         edges.extend(face.outerWire().Edges())
     return edges
 
-def _fillet_outer_edges(result, top=0, bottom=0):
-    if bottom:
-        edges = _outer_wire_edges(result, "<Z")
-        if edges:
-            result = result.newObject(edges).fillet(bottom)
-    if top:
-        edges = _outer_wire_edges(result, ">Z")
-        if edges:
-            result = result.newObject(edges).fillet(top)
+def _inner_wire_edges(result, selector):
+    edges = []
+    for face in result.faces(selector).vals():
+        for wire in face.innerWires():
+            edges.extend(wire.Edges())
+    return edges
+
+def _apply_edge_treatment(result, part_name, operation_name, operation, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
+    for selector, outer_value, inner_value in (("<Z", outer_bottom, inner_bottom), (">Z", outer_top, inner_top)):
+        if outer_value:
+            edges = _outer_wire_edges(result, selector)
+            if edges:
+                try:
+                    result = operation(result.newObject(edges), outer_value)
+                except Exception as exc:
+                    raise RuntimeError(f"{operation_name} failed on {part_name} outer {selector} edges with value {outer_value}") from exc
+        if inner_value:
+            edges = _inner_wire_edges(result, selector)
+            if edges:
+                try:
+                    result = operation(result.newObject(edges), inner_value)
+                except Exception as exc:
+                    raise RuntimeError(f"{operation_name} failed on {part_name} inner {selector} edges with value {inner_value}") from exc
     return result
 
-def _chamfer_outer_edges(result, top=0, bottom=0):
-    if bottom:
-        edges = _outer_wire_edges(result, "<Z")
-        if edges:
-            result = result.newObject(edges).chamfer(bottom)
-    if top:
-        edges = _outer_wire_edges(result, ">Z")
-        if edges:
-            result = result.newObject(edges).chamfer(top)
-    return result
+def _fillet_edges(result, part_name, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
+    return _apply_edge_treatment(result, part_name, "fillet", lambda edges, value: edges.fillet(value), outer_top, outer_bottom, inner_top, inner_bottom)
+
+def _chamfer_edges(result, part_name, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
+    return _apply_edge_treatment(result, part_name, "chamfer", lambda edges, value: edges.chamfer(value), outer_top, outer_bottom, inner_top, inner_bottom)
 
 def make_part_mcu_cover_0__mcu_cover_a():
     edges = []
     edges.append(cq.Edge.makeLine(
-        cq.Vector(148.422991, -90.831364, 0),
+        cq.Vector(148.422991, -100.904065, 0),
         cq.Vector(148.422991, -58.838813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
@@ -73,21 +82,12 @@ def make_part_mcu_cover_0__mcu_cover_a():
     ))
     edges.append(cq.Edge.makeLine(
         cq.Vector(145.993818, -106.335139, 0),
-        cq.Vector(148.174360, -101.658950, 0)
+        cq.Vector(148.329299, -101.326684, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(148.174360, -101.658950, 0),
-        cq.Vector(148.242710, -101.460034, 0),
-        cq.Vector(148.267941, -101.251221, 0)
-    ))
-    edges.append(cq.Edge.makeLine(
-        cq.Vector(148.267941, -101.251221, 0),
-        cq.Vector(148.422880, -90.846254, 0)
-    ))
-    edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(148.422880, -90.846254, 0),
-        cq.Vector(148.422963, -90.838809, 0),
-        cq.Vector(148.422991, -90.831364, 0)
+        cq.Vector(148.329299, -101.326684, 0),
+        cq.Vector(148.399287, -101.120505, 0),
+        cq.Vector(148.422991, -100.904065, 0)
     ))
     _wire_0 = cq.Wire.assembleEdges(edges)
     _face_0 = cq.Face.makeFromWires(_wire_0)

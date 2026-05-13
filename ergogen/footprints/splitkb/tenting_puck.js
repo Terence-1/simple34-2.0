@@ -15,7 +15,6 @@ module.exports = {
 
   body: p => {
     const side = p.side === 'F' ? 'F' : 'B';
-    const silk = `${side}.SilkS`;
     const fab  = `${side}.Fab`;
 
     // ── Mounting holes ────────────────────────────────────────────────────────
@@ -47,14 +46,14 @@ module.exports = {
       [-20.32,      -2.8575,   -19.91151,  -4.959786, -19.286134,  -7.008048],
     ];
 
-    const arcs = arc_data.map(([sx, sy, mx, my, ex, ey]) => `
+    const arcs = ['F.SilkS', 'B.SilkS'].flatMap(silk => arc_data.map(([sx, sy, mx, my, ex, ey]) => `
     (fp_arc
       (start ${sx} ${sy})
       (mid   ${mx} ${my})
       (end   ${ex} ${ey})
       (layer "${silk}")
       (width 0.2)
-    )`).join('');
+    )`)).join('');
 
     // ── Reference / value ─────────────────────────────────────────────────────
     const texts = `

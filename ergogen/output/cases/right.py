@@ -11,89 +11,98 @@ def _outer_wire_edges(result, selector):
         edges.extend(face.outerWire().Edges())
     return edges
 
-def _fillet_outer_edges(result, top=0, bottom=0):
-    if bottom:
-        edges = _outer_wire_edges(result, "<Z")
-        if edges:
-            result = result.newObject(edges).fillet(bottom)
-    if top:
-        edges = _outer_wire_edges(result, ">Z")
-        if edges:
-            result = result.newObject(edges).fillet(top)
+def _inner_wire_edges(result, selector):
+    edges = []
+    for face in result.faces(selector).vals():
+        for wire in face.innerWires():
+            edges.extend(wire.Edges())
+    return edges
+
+def _apply_edge_treatment(result, part_name, operation_name, operation, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
+    for selector, outer_value, inner_value in (("<Z", outer_bottom, inner_bottom), (">Z", outer_top, inner_top)):
+        if outer_value:
+            edges = _outer_wire_edges(result, selector)
+            if edges:
+                try:
+                    result = operation(result.newObject(edges), outer_value)
+                except Exception as exc:
+                    raise RuntimeError(f"{operation_name} failed on {part_name} outer {selector} edges with value {outer_value}") from exc
+        if inner_value:
+            edges = _inner_wire_edges(result, selector)
+            if edges:
+                try:
+                    result = operation(result.newObject(edges), inner_value)
+                except Exception as exc:
+                    raise RuntimeError(f"{operation_name} failed on {part_name} inner {selector} edges with value {inner_value}") from exc
     return result
 
-def _chamfer_outer_edges(result, top=0, bottom=0):
-    if bottom:
-        edges = _outer_wire_edges(result, "<Z")
-        if edges:
-            result = result.newObject(edges).chamfer(bottom)
-    if top:
-        edges = _outer_wire_edges(result, ">Z")
-        if edges:
-            result = result.newObject(edges).chamfer(top)
-    return result
+def _fillet_edges(result, part_name, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
+    return _apply_edge_treatment(result, part_name, "fillet", lambda edges, value: edges.fillet(value), outer_top, outer_bottom, inner_top, inner_bottom)
+
+def _chamfer_edges(result, part_name, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
+    return _apply_edge_treatment(result, part_name, "chamfer", lambda edges, value: edges.chamfer(value), outer_top, outer_bottom, inner_top, inner_bottom)
 
 def make_part__right_0__wall_a():
     edges = []
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(129.867193, -42.463051, 0),
-        cq.Vector(78.135206, -34.337420, 0),
-        cq.Vector(31.336157, -57.832526, 0)
+        cq.Vector(129.957481, -42.284590, 0),
+        cq.Vector(78.104551, -34.139784, 0),
+        cq.Vector(31.196097, -57.689756, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(31.336157, -57.832526, 0),
-        cq.Vector(30.818523, -58.655736, 0),
-        cq.Vector(30.727225, -59.623871, 0)
+        cq.Vector(31.196097, -57.689756, 0),
+        cq.Vector(30.629164, -58.591368, 0),
+        cq.Vector(30.529171, -59.651706, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(30.727225, -59.623871, 0),
-        cq.Vector(37.825053, -110.127542, 0)
+        cq.Vector(30.529171, -59.651706, 0),
+        cq.Vector(37.626999, -110.155377, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(37.825053, -110.127542, 0),
-        cq.Vector(38.615062, -111.492702, 0),
-        cq.Vector(40.132537, -111.922874, 0)
+        cq.Vector(37.626999, -110.155377, 0),
+        cq.Vector(38.492248, -111.650552, 0),
+        cq.Vector(40.154244, -112.121693, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(40.132537, -111.922874, 0),
-        cq.Vector(89.427664, -112.788051, 0),
-        cq.Vector(136.941878, -125.945269, 0)
+        cq.Vector(40.154244, -112.121693, 0),
+        cq.Vector(89.398765, -112.985952, 0),
+        cq.Vector(136.864651, -126.129758, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(136.941878, -125.945269, 0),
-        cq.Vector(138.510221, -125.966777, 0),
-        cq.Vector(139.656008, -124.895639, 0)
+        cq.Vector(136.864651, -126.129758, 0),
+        cq.Vector(138.582360, -126.153314, 0),
+        cq.Vector(139.837269, -124.980163, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(139.656008, -124.895639, 0),
-        cq.Vector(150.168003, -102.352592, 0)
+        cq.Vector(139.837269, -124.980163, 0),
+        cq.Vector(150.507499, -102.097782, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(150.168003, -102.352592, 0),
-        cq.Vector(150.314151, -101.923335, 0),
-        cq.Vector(150.364743, -101.472711, 0)
+        cq.Vector(150.507499, -102.097782, 0),
+        cq.Vector(150.668472, -101.623571, 0),
+        cq.Vector(150.722991, -101.125760, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(150.364743, -101.472711, 0),
-        cq.Vector(150.522977, -57.846429, 0)
+        cq.Vector(150.722991, -101.125760, 0),
+        cq.Vector(150.722991, -57.838813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(150.522977, -57.846429, 0),
-        cq.Vector(149.910606, -56.356584, 0),
-        cq.Vector(148.422991, -55.738813, 0)
+        cq.Vector(150.722991, -57.838813, 0),
+        cq.Vector(150.049336, -56.212467, 0),
+        cq.Vector(148.422991, -55.538813, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(148.422991, -55.738813, 0),
-        cq.Vector(131.022991, -55.738813, 0)
+        cq.Vector(148.422991, -55.538813, 0),
+        cq.Vector(131.222991, -55.538813, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(131.022991, -55.738813, 0),
-        cq.Vector(131.022991, -44.338813, 0)
+        cq.Vector(131.222991, -55.538813, 0),
+        cq.Vector(131.222991, -44.338813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(131.022991, -44.338813, 0),
-        cq.Vector(130.710842, -43.237183, 0),
-        cq.Vector(129.867193, -42.463051, 0)
+        cq.Vector(131.222991, -44.338813, 0),
+        cq.Vector(130.881221, -43.132440, 0),
+        cq.Vector(129.957481, -42.284590, 0)
     ))
     _wire_0 = cq.Wire.assembleEdges(edges)
     _face_0 = cq.Face.makeFromWires(_wire_0)
@@ -104,69 +113,69 @@ def make_part__right_0__wall_a():
 def make_part__right_0__wall_b():
     edges = []
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(129.147801, -43.892203, 0),
-        cq.Vector(78.382066, -35.918262, 0),
-        cq.Vector(32.456638, -58.974684, 0)
+        cq.Vector(129.237725, -43.713559, 0),
+        cq.Vector(78.351149, -35.720666, 0),
+        cq.Vector(32.316578, -58.831914, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(32.456638, -58.974684, 0),
-        cq.Vector(32.333392, -59.170686, 0),
-        cq.Vector(32.311654, -59.401194, 0)
+        cq.Vector(32.316578, -58.831914, 0),
+        cq.Vector(32.144033, -59.106317, 0),
+        cq.Vector(32.113600, -59.429029, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(32.311654, -59.401194, 0),
-        cq.Vector(39.409482, -109.904866, 0)
+        cq.Vector(32.113600, -59.429029, 0),
+        cq.Vector(39.211428, -109.932700, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(39.409482, -109.904866, 0),
-        cq.Vector(39.597579, -110.229904, 0),
-        cq.Vector(39.958883, -110.332326, 0)
+        cq.Vector(39.211428, -109.932700, 0),
+        cq.Vector(39.474765, -110.387754, 0),
+        cq.Vector(39.980590, -110.531144, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(39.958883, -110.332326, 0),
-        cq.Vector(89.656795, -111.204542, 0),
-        cq.Vector(137.559694, -124.469362, 0)
+        cq.Vector(39.980590, -110.531144, 0),
+        cq.Vector(89.628125, -111.402477, 0),
+        cq.Vector(137.482467, -124.653850, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(137.559694, -124.469362, 0),
-        cq.Vector(137.933109, -124.474483, 0),
-        cq.Vector(138.205915, -124.219450, 0)
+        cq.Vector(137.482467, -124.653850, 0),
+        cq.Vector(138.005248, -124.661019, 0),
+        cq.Vector(138.387177, -124.303974, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(138.205915, -124.219450, 0),
-        cq.Vector(148.717911, -101.676403, 0)
+        cq.Vector(138.387177, -124.303974, 0),
+        cq.Vector(149.057406, -101.421593, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(148.717911, -101.676403, 0),
-        cq.Vector(148.752708, -101.574199, 0),
-        cq.Vector(148.764754, -101.466908, 0)
+        cq.Vector(149.057406, -101.421593, 0),
+        cq.Vector(149.106398, -101.277268, 0),
+        cq.Vector(149.122991, -101.125760, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(148.764754, -101.466908, 0),
-        cq.Vector(148.922988, -57.840626, 0)
+        cq.Vector(149.122991, -101.125760, 0),
+        cq.Vector(149.122991, -57.838813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(148.922988, -57.840626, 0),
-        cq.Vector(148.777185, -57.485901, 0),
-        cq.Vector(148.422991, -57.338813, 0)
+        cq.Vector(149.122991, -57.838813, 0),
+        cq.Vector(148.917966, -57.343838, 0),
+        cq.Vector(148.422991, -57.138813, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(148.422991, -57.338813, 0),
-        cq.Vector(130.422991, -57.338813, 0)
+        cq.Vector(148.422991, -57.138813, 0),
+        cq.Vector(130.422991, -57.138813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(130.422991, -57.338813, 0),
-        cq.Vector(129.715884, -57.045919, 0),
-        cq.Vector(129.422991, -56.338813, 0)
+        cq.Vector(130.422991, -57.138813, 0),
+        cq.Vector(129.857305, -56.904498, 0),
+        cq.Vector(129.622991, -56.338813, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(129.422991, -56.338813, 0),
-        cq.Vector(129.422991, -44.338813, 0)
+        cq.Vector(129.622991, -56.338813, 0),
+        cq.Vector(129.622991, -44.338813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(129.422991, -44.338813, 0),
-        cq.Vector(129.348670, -44.076520, 0),
-        cq.Vector(129.147801, -43.892203, 0)
+        cq.Vector(129.622991, -44.338813, 0),
+        cq.Vector(129.518941, -43.971603, 0),
+        cq.Vector(129.237725, -43.713559, 0)
     ))
     _wire_0 = cq.Wire.assembleEdges(edges)
     _face_0 = cq.Face.makeFromWires(_wire_0)
@@ -180,72 +189,72 @@ def make_part__right_0__wall():
     result = a.cut(b)
     return result
 
-def make_part__right_1__pcb():
+def make_part__right_1__base():
     edges = []
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(129.147801, -43.892203, 0),
-        cq.Vector(78.382066, -35.918262, 0),
-        cq.Vector(32.456638, -58.974684, 0)
+        cq.Vector(129.237725, -43.713559, 0),
+        cq.Vector(78.351149, -35.720666, 0),
+        cq.Vector(32.316578, -58.831914, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(32.456638, -58.974684, 0),
-        cq.Vector(32.333392, -59.170686, 0),
-        cq.Vector(32.311654, -59.401194, 0)
+        cq.Vector(32.316578, -58.831914, 0),
+        cq.Vector(32.144033, -59.106317, 0),
+        cq.Vector(32.113600, -59.429029, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(32.311654, -59.401194, 0),
-        cq.Vector(39.409482, -109.904866, 0)
+        cq.Vector(32.113600, -59.429029, 0),
+        cq.Vector(39.211428, -109.932700, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(39.409482, -109.904866, 0),
-        cq.Vector(39.597579, -110.229904, 0),
-        cq.Vector(39.958883, -110.332326, 0)
+        cq.Vector(39.211428, -109.932700, 0),
+        cq.Vector(39.474765, -110.387754, 0),
+        cq.Vector(39.980590, -110.531144, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(39.958883, -110.332326, 0),
-        cq.Vector(89.656795, -111.204542, 0),
-        cq.Vector(137.559694, -124.469362, 0)
+        cq.Vector(39.980590, -110.531144, 0),
+        cq.Vector(89.628125, -111.402477, 0),
+        cq.Vector(137.482467, -124.653850, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(137.559694, -124.469362, 0),
-        cq.Vector(137.933109, -124.474483, 0),
-        cq.Vector(138.205915, -124.219450, 0)
+        cq.Vector(137.482467, -124.653850, 0),
+        cq.Vector(138.005248, -124.661019, 0),
+        cq.Vector(138.387177, -124.303974, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(138.205915, -124.219450, 0),
-        cq.Vector(148.717911, -101.676403, 0)
+        cq.Vector(138.387177, -124.303974, 0),
+        cq.Vector(149.057406, -101.421593, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(148.717911, -101.676403, 0),
-        cq.Vector(148.752708, -101.574199, 0),
-        cq.Vector(148.764754, -101.466908, 0)
+        cq.Vector(149.057406, -101.421593, 0),
+        cq.Vector(149.106398, -101.277268, 0),
+        cq.Vector(149.122991, -101.125760, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(148.764754, -101.466908, 0),
-        cq.Vector(148.922988, -57.840626, 0)
+        cq.Vector(149.122991, -101.125760, 0),
+        cq.Vector(149.122991, -57.838813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(148.922988, -57.840626, 0),
-        cq.Vector(148.777185, -57.485901, 0),
-        cq.Vector(148.422991, -57.338813, 0)
+        cq.Vector(149.122991, -57.838813, 0),
+        cq.Vector(148.917966, -57.343838, 0),
+        cq.Vector(148.422991, -57.138813, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(148.422991, -57.338813, 0),
-        cq.Vector(130.422991, -57.338813, 0)
+        cq.Vector(148.422991, -57.138813, 0),
+        cq.Vector(130.422991, -57.138813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(130.422991, -57.338813, 0),
-        cq.Vector(129.715884, -57.045919, 0),
-        cq.Vector(129.422991, -56.338813, 0)
+        cq.Vector(130.422991, -57.138813, 0),
+        cq.Vector(129.857305, -56.904498, 0),
+        cq.Vector(129.622991, -56.338813, 0)
     ))
     edges.append(cq.Edge.makeLine(
-        cq.Vector(129.422991, -56.338813, 0),
-        cq.Vector(129.422991, -44.338813, 0)
+        cq.Vector(129.622991, -56.338813, 0),
+        cq.Vector(129.622991, -44.338813, 0)
     ))
     edges.append(cq.Edge.makeThreePointArc(
-        cq.Vector(129.422991, -44.338813, 0),
-        cq.Vector(129.348670, -44.076520, 0),
-        cq.Vector(129.147801, -43.892203, 0)
+        cq.Vector(129.622991, -44.338813, 0),
+        cq.Vector(129.518941, -43.971603, 0),
+        cq.Vector(129.237725, -43.713559, 0)
     ))
     _wire_0 = cq.Wire.assembleEdges(edges)
     _face_0 = cq.Face.makeFromWires(_wire_0)
@@ -353,7 +362,7 @@ def make_part__right_5__power_switch_b():
     ))
     _wire_0 = cq.Wire.assembleEdges(edges)
     _face_0 = cq.Face.makeFromWires(_wire_0)
-    _solid_0 = cq.Solid.extrudeLinear(_face_0, cq.Vector(0, 0, 2.6))
+    _solid_0 = cq.Solid.extrudeLinear(_face_0, cq.Vector(0, 0, 1.6))
     result = cq.Workplane("XY").add(_solid_0)
     return result
 
@@ -363,9 +372,9 @@ def make_part__right_5__power_switch():
 
 def make_case__right():
     _part_0 = make_part__right_0__wall()
-    _part_0 = _fillet_outer_edges(_part_0, 0.5, 0.5)
+    _part_0 = _fillet_edges(_part_0, "_part_0", 0.5, 1, 0, 0)
     result = _part_0
-    _part_1 = make_part__right_1__pcb()
+    _part_1 = make_part__right_1__base()
     result = result.union(_part_1)
     _part_2 = make_part__right_2__heat_inserts()
     result = result.union(_part_2)

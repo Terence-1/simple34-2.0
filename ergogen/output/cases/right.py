@@ -293,15 +293,15 @@ def make_part__right_2__heat_inserts():
 
 def make_part__right_3__non_slip_a():
     result = None
-    _s = cq.Workplane("XY").moveTo(37.854480, -62.913968).circle(4.100000).extrude(1)
+    _s = cq.Workplane("XY").moveTo(38.597181, -62.809588).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
     _s = cq.Workplane("XY").moveTo(83.922991, -42.638813).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
-    _s = cq.Workplane("XY").moveTo(124.422991, -48.588813).circle(4.100000).extrude(1)
+    _s = cq.Workplane("XY").moveTo(123.672991, -48.588813).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
     _s = cq.Workplane("XY").moveTo(143.922991, -66.088813).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
-    _s = cq.Workplane("XY").moveTo(135.470504, -118.254551).circle(4.100000).extrude(1)
+    _s = cq.Workplane("XY").moveTo(135.002082, -117.484433).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
     _s = cq.Workplane("XY").moveTo(83.922991, -104.388813).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
@@ -309,7 +309,7 @@ def make_part__right_3__non_slip_a():
 
 def make_part__right_3__non_slip_b():
     result = None
-    _s = cq.Workplane("XY").moveTo(43.769337, -105.000361).circle(4.100000).extrude(1)
+    _s = cq.Workplane("XY").moveTo(44.442451, -104.400847).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
     return result
 

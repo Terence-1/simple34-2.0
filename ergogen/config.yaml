@@ -165,7 +165,7 @@ points:
     non_slip_top_left: &non_slip
       anchor:
         ref: matrix_pinky_top
-        shift: [-0.25cx, 0.25cy]
+        shift: [-0.25kx, 0.25cy]
       key:
         tags:
           - non_slip
@@ -180,7 +180,7 @@ points:
       <<: *non_slip
       anchor:
         ref: matrix_inner_top
-        shift: [0.25cx, 0.25cy]
+        shift: [0.25kx, 0.25cy]
     non_slip_mcu:
       <<: *non_slip
       anchor:
@@ -190,7 +190,7 @@ points:
       <<: *non_slip
       anchor:
         ref: thumb_second_only
-        shift: [0.25cx, -0.25cy]
+        shift: [0.25kx, -0.25ky]
     non_slip_bottom_middle:
       <<: *non_slip 
       anchor:
@@ -200,7 +200,7 @@ points:
       <<: *non_slip
       anchor:
         ref: matrix_pinky_bottom
-        shift: [-0.25cx, -0.25cy]
+        shift: [-0.25kx, -0.25ky]
 
 outlines:
   _raw:

@@ -3,6 +3,10 @@ module.exports = {
     designator: 'SW',
     side: 'F',
     reversible: false,
+    switch_3dmodel_filename: '',
+    switch_3dmodel_xyz_offset: [0, 0, 0],
+    switch_3dmodel_xyz_rotation: [0, 0, 0],
+    switch_3dmodel_xyz_scale: [1, 1, 1],
     from: { type: 'net', value: 'GND' },
     to: { type: 'net', value: 'RST' },
   },
@@ -30,10 +34,10 @@ module.exports = {
     `
 
     const front_silk = `
-      (fp_line (start -1.5 -1.2) (end 1.5 -1.2) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
-      (fp_line (start -1.5  1.2) (end 1.5  1.2) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
-      (fp_line (start -1.5 -1.2) (end -1.5 1.2) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
-      (fp_line (start  1.5 -1.2) (end  1.5 1.2) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start -2 -1.5) (end 2 -1.5) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start -2  1.5) (end 2  1.5) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start -2 -1.5) (end -2 1.5) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start  2 -1.5) (end  2 1.5) (layer "F.SilkS") (stroke (width 0.1) (type solid)))
     `
 
     const front_smd_pads = `
@@ -42,10 +46,10 @@ module.exports = {
     `
 
     const back_silk = `
-      (fp_line (start -1.5 -1.2) (end 1.5 -1.2) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
-      (fp_line (start -1.5  1.2) (end 1.5  1.2) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
-      (fp_line (start -1.5 -1.2) (end -1.5 1.2) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
-      (fp_line (start  1.5 -1.2) (end  1.5 1.2) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start -2 -1.5) (end 2 -1.5) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start -2  1.5) (end 2  1.5) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start -2 -1.5) (end -2 1.5) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
+      (fp_line (start  2 -1.5) (end  2 1.5) (layer "B.SilkS") (stroke (width 0.1) (type solid)))
     `
 
     const back_smd_pads = `
@@ -60,6 +64,14 @@ module.exports = {
 
     const standard_closing = `
     )
+    `
+
+    const switch_3dmodel = `
+      (model ${p.switch_3dmodel_filename}
+        (offset (xyz ${p.switch_3dmodel_xyz_offset[0]} ${p.switch_3dmodel_xyz_offset[1]} ${p.switch_3dmodel_xyz_offset[2]}))
+        (scale (xyz ${p.switch_3dmodel_xyz_scale[0]} ${p.switch_3dmodel_xyz_scale[1]} ${p.switch_3dmodel_xyz_scale[2]}))
+        (rotate (xyz ${p.switch_3dmodel_xyz_rotation[0]} ${p.switch_3dmodel_xyz_rotation[1]} ${p.switch_3dmodel_xyz_rotation[2]}))
+      )
     `
 
     let final = standard_opening;
@@ -77,6 +89,10 @@ module.exports = {
         final += back_silk;
         final += back_smd_pads;
       }
+    }
+
+    if (p.switch_3dmodel_filename) {
+      final += switch_3dmodel;
     }
 
     final += standard_closing;

@@ -6,6 +6,9 @@ units:
   px: 18
   py: 33
 
+  kx: 15
+  ky: 15
+
   skt: 19.05
 
 points:
@@ -40,9 +43,6 @@ points:
             stagger: -0.1cy
             origin: [0, -17]
             column_net: C4
-          rows:
-            top:
-              adjust.rotate: 180
       rows:
         bottom:
           row_net: R2
@@ -89,7 +89,7 @@ points:
     mcu: &mcu
       anchor:
         ref.aggregate.parts: [matrix_inner_home, matrix_inner_bottom]
-        shift: [0.5cx + 10.5, 4]
+        shift: [0.5cx + 10.5, 0]
       key:
         tags:
           - mcu
@@ -102,12 +102,28 @@ points:
           method: intersect
           parts:
             - ref: thumb_second_only
-              shift: [0.5cx, 0.5cy]
+              shift: [0.5kx, 0.5ky]
             - ref: [mcu]
-              shift: [0.5px, -0.5py]
+              shift: [0.5px-0.5, -0.5py]
       key:
         tags:
           - intercept
+        height: 0
+        width: 0
+
+    intercept2: &intercept2
+      anchor:
+        aggregate:
+          method: intersect
+          parts:
+            - ref: [mcu]
+              shift: [-0.5px, 0.5py+0.3]
+              rotate: 90
+            - ref: matrix_inner_top
+              shift: [0.5kx, 0.5ky]
+      key:
+        tags:
+          - intercept2
         height: 0
         width: 0
 
@@ -164,7 +180,7 @@ points:
       <<: *non_slip
       anchor:
         ref: matrix_inner_top
-        shift: [-0.25cx, -0.25cy]
+        shift: [0.25cx, 0.25cy]
     non_slip_mcu:
       <<: *non_slip
       anchor:
@@ -185,21 +201,6 @@ points:
       anchor:
         ref: matrix_pinky_bottom
         shift: [-0.25cx, -0.25cy]
-    
-    cover_left: &cover
-      anchor:
-        ref: thumb_second_only
-        shift: [-0.5cx+4, 0.5cy+4.5]
-      key:
-        tags:
-          - cover
-        height: 0
-        width: 0
-    cover_right:
-      <<: *cover
-      anchor:
-        ref: thumb_second_only
-        shift: [0.5cx-3, 0.5cy+4.5]
 
 outlines:
   _raw:
@@ -212,36 +213,35 @@ outlines:
         - type: arc
           points:
             - ref: matrix_pinky_top
-              shift: [-0.5cx, 0.5cy]
+              shift: [-0.5kx, 0.5cy]
             - ref: matrix_ring_top
-              shift: [-0.5cx, 0.5cy]
+              shift: [-0.5kx, 0.5ky]
             - ref: matrix_inner_top
-              shift: [-0.5cx, -0.5cy]
+              shift: [0.5kx, 0.5cy]
+        - type: line
+          points:
+            - ref: [intercept2]
         - type: line
           points:
             - ref: [mcu]
-              shift: [-0.5px - 1.5, 0.5py]
-        - type: line
-          points:
-            - ref: [mcu]
-              shift: [0.5px, 0.5py]
+              shift: [0.5px-0.5, 0.5py+0.3]
         - type: line
           points:
             - ref: [intercept]
         - type: line
           points:
             - ref: thumb_second_only
-              shift: [0.5cx, -0.5cy]
+              shift: [0.5kx, -0.5ky]
         - type: arc
           points:
             - ref: thumb_first_only
-              shift: [-0.5cx, -0.5cy]
+              shift: [-0.5kx, -0.5ky]
             - ref: matrix_pinky_bottom
-              shift: [-0.5cx, -0.5cy]
+              shift: [-0.5kx, -0.5ky]
         - type: line
           points:
             - ref: matrix_pinky_top
-              shift: [-0.5cx, 0.5cy]
+              shift: [-0.5kx, 0.5ky]
       expand: 0.5
       fillet: 1
   _base:
@@ -252,11 +252,6 @@ outlines:
       expand: 1.6
     - operation: subtract
       name: _base
-  _power_switch:
-    - what: rectangle
-      where: [mcu]
-      size: [10, 7]
-      adjust.shift: [0.5px-1.9, -0.5py-5]
   _heat_inserts:
     - what: circle
       where: [screws]
@@ -269,31 +264,6 @@ outlines:
     - what: circle
       where: [non_slip]
       radius: 4.1
-  _mcu_cover:
-    - what: rectangle
-      where: [mcu]
-      size: [px, py]
-    - what: polygon
-      points:
-        - ref: [mcu]
-          shift: [-0.5px, -0.5py]
-        - ref: [mcu]
-          shift: [-0.5px, -0.5py-10]
-        - ref: thumb_second_only
-          shift: [0.5cx, 0.5cy]
-        - ref: [intercept]
-        - ref: [mcu]
-          shift: [0.5px, -0.5py]
-    - operation: subtract
-      what: rectangle
-      where.ref: thumb_second_only
-      size: [cx, cy]
-      adjust.shift: [0, 1.5]
-      fillet: 1
-    - operation: subtract
-      what: circle
-      where: [cover]
-      radius: 1
 pcbs:
   simple34_v2:
     template: kicad8
@@ -305,6 +275,11 @@ pcbs:
         params:
           reverse_mount: true
           reversible: true
+          show_instructions: false
+          show_silk_labels: false
+          show_via_labels: true
+          mcu_3dmodel_filename: ${SCOTTOKEEBS_KICAD}/3dmodels/ScottoKeebs_MCU.3dshapes/Nice_Nano_V2_Flipped.step
+          mcu_3dmodel_xyz_offset: [0, 0, 6]
           P21: C0
           P20: C1
           P19: C2
@@ -315,22 +290,9 @@ pcbs:
           P8: R2
           P7: R1
           P6: R0
-      choc_hotswap:
-        what: ceoloide/switch_choc_v1_v2
-        where: [key]
-        params:
-          from: "{{column_net}}"
-          to: "{{colrow}}"
-          include_corner_marks: true
-          include_keycap: true
-          keycap_height: 16.5
-          keycap_width: 17.5
-          reversible: true
-          hotswap: true
-          choc_v2_support: false
-          outer_pad_width_front: 2.0
-          outer_pad_width_back: 2.0
-        adjust.rotate: 180
+          P3: led_1
+          P4: led_2
+          P5: led_3
       diode:
         what: ceoloide/diode_tht_sod123
         where: [key]
@@ -339,18 +301,35 @@ pcbs:
           include_thru_hole_smd_pads: true
           from: "{{colrow}}"
           to: "{{row_net}}"
+          diode_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SOD-123.step
+          diode_3dmodel_xyz_offset: [0, 0, -1.6]
+          diode_3dmodel_xyz_rotation: [0, 180, 180]
         adjust:
           shift: [0, 4.7]
           rotate: 180
+      choc_solder:
+        what: ceoloide/switch_choc_v1_v2
+        where: [key]
+        params:
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+          include_corner_marks: true
+          keycap_height: 16.5
+          keycap_width: 17.5
+          reversible: true
+          hotswap: false
+          solder: true
+          choc_v2_support: false
+          switch_3dmodel_filename: ${KICAD9_3RD_PARTY}/3dmodels/com_github_perigoso_keyswitch-kicad-library/3d-library.3dshapes/SW_Kailh_Choc_V1.stp
+          switch_3dmodel_xyz_offset: [0, 0, -1.6]
+          switch_3dmodel_xyz_rotation: [0, 180, 180]
+          keycap_3dmodel_filename: ${KIPRJMOD}/../../models/MBK_Keycap_-_1u.step
+          keycap_3dmodel_xyz_offset: [0, 0, -8.5]
+          keycap_3dmodel_xyz_rotation: [0, 180, 0]
+        adjust.rotate: 180
       tenting_puck:
         what: splitkb/tenting_puck
         where: [tenting_puck]
-      mounting:
-        what: ceoloide/mounting_hole_plated
-        where: [cover]
-        params:
-          drill: 2
-          outline: 1
       power_switch:
         what: ceoloide/power_switch_smd_side
         where: [mcu]
@@ -359,28 +338,99 @@ pcbs:
           include_silkscreen: false
           from: BAT_P
           to: RAW
+          switch_3dmodel_filename: ${SCOTTOKEEBS_KICAD}/3dmodels/ScottoKeebs_Components.3dshapes/Switch_MSK12C02.step
+          switch_3dmodel_xyz_rotation: [0, 0, 90]
         adjust:
-          shift: [0.5px-1.9, -0.5py-5]
+          shift: [0, 0.5py-1.5]
+          rotate: 90
       reset:
-        what: terence/reset
-        where: [mcu]
-        params.reversible: true
-        adjust:
-          shift: [0, -0.5py-3]
-      battery:
-        what: ceoloide/battery_connector_jst_ph_2
+        what: terence/reset_tht
         where: [mcu]
         params:
-          include_silkscreen: false
-          include_fabrication: false
-          include_courtyard: false
+          reversible: true
+          switch_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/Button_Switch_SMD.3dshapes/SW_SPST_TS-1088-xR020.step
         adjust:
-          shift: [-0.5px+2, -0.5py-2]
+          shift: [-0.5px-2, -0.5py-3]
           rotate: 90
+      led_1:
+        what: terence/led_5mm_tht
+        where: [mcu]
+        params:
+          reversible: true
+          anode: led_1
+          cathode: r1
+          led_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D5.0mm_Green.step
+          led_3dmodel_xyz_offset: [-1.3, 0, -3]
+        adjust:
+          shift: [5.5, -0.5py-3]
+      led_2:
+        what: terence/led_5mm_tht
+        where: [mcu]
+        params:
+          reversible: true
+          anode: led_2
+          cathode: r2
+          led_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D5.0mm_Green.step
+          led_3dmodel_xyz_offset: [-1.3, 0, -3]
+        adjust:
+          shift: [0, -0.5py-3]
+      led_3:
+        what: terence/led_5mm_tht
+        where: [mcu]
+        params:
+          reversible: true
+          anode: led_3
+          cathode: r3
+          led_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D5.0mm_Green.step
+          led_3dmodel_xyz_offset: [-1.3, 0, -3]
+        adjust:
+          shift: [-5.5, -0.5py-3]
+      led_1_resistor:
+        what: terence/resistor_1206
+        where: [mcu]
+        params:
+          reversible: true
+          from: r1
+          to: GND
+          resistor_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_1206_3216Metric.step
+        adjust:
+          shift: [3, -0.5py-9]
+          rotate: 270
+      led_2_resistor:
+        what: terence/resistor_1206
+        where: [mcu]
+        params:
+          reversible: true
+          from: r2
+          to: GND
+          resistor_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_1206_3216Metric.step
+        adjust:
+          shift: [0, -0.5py-9]
+          rotate: 270
+      led_3_resistor:
+        what: terence/resistor_1206
+        where: [mcu]
+        params:
+          reversible: true
+          from: r3
+          to: GND
+          resistor_3dmodel_filename: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_1206_3216Metric.step
+        adjust:
+          shift: [-3, -0.5py-9]
+          rotate: 270
+      battery:
+        what: terence/battery_socket_tht
+        where: [mcu]
+        params:
+          reversible: true
+          BAT_P: BAT_P
+          BAT_N: GND
+        adjust:
+          shift: [0, 0.5py-1.5]
 cases:
   left:
     - name: _wall
-      extrude: 6.6
+      extrude: 5.6
       fillet.outer: [1, 0.5]
     - name: _base 
       extrude: 2
@@ -393,36 +443,26 @@ cases:
     - operation: subtract
       name: _heat_inserts_negative
       extrude: 3
-      shift: [0, 0, 1]
-    - operation: subtract
-      name: _power_switch
-      extrude: 1.6
-      shift: [0, 0, 5]
+      shift: [0, 0, 1.2]
   _right:
     - name: _wall
-      extrude: 6.6
+      extrude: 5.6
       fillet.outer: [0.5, 1]
     - name: _base
       extrude: 2
-      shift: [0, 0, 4.6]
+      shift: [0, 0, 3.6]
     - name: _heat_inserts
       extrude: 2
-      shift: [0, 0, 2.6]
+      shift: [0, 0, 1.6]
     - operation: subtract
       name: _non_slip
       extrude: 1
-      shift: [0, 0, 5.6]
+      shift: [0, 0, 4.6]
     - operation: subtract
       name: _heat_inserts_negative
       extrude: 3
-      shift: [0, 0, 2.6]
-    - operation: subtract
-      name: _power_switch
-      extrude: 1.6
+      shift: [0, 0, 1.4]
   right:
     - what: case
       name: _right
       rotate: [0, 180, 0]
-  mcu_cover:
-    - name: _mcu_cover
-      extrude: 2

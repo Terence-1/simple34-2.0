@@ -1,9 +1,11 @@
 [submodule "ergogen/footprints/ceoloide"]
 	path = ergogen/footprints/ceoloide
 	url = https://github.com/ceoloide/ergogen-footprints
+
 [submodule "qmk"]
 	path = qmk
 	url = https://github.com/Terence-1/qmk-config-simple34
+
 [submodule "rmk"]
 	path = rmk
 	url = https://github.com/Terence-1/rmk-config-simple34

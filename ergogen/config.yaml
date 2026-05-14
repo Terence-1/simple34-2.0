@@ -201,6 +201,31 @@ points:
       anchor:
         ref: matrix_pinky_bottom
         shift: [-0.25kx, -0.25ky]
+        
+    stand1: &stand
+      anchor:
+        ref: matrix_pinky_top
+        shift: [0.5cx+2, 0]
+      key:
+        tags:
+          - stand
+        height: 0
+        width: 0
+    stand2:
+      <<: *stand
+      anchor:
+        ref: matrix_pinky_bottom
+        shift: [0.5cx+2, 0]
+    stand3:
+      <<: *stand 
+      anchor:
+        ref: thumb_first_only
+        shift: [0.5cx+2, 0]
+    stand4:
+      <<: *stand
+      anchor:
+        ref: [mcu]
+        shift: [0, 0]
 
 outlines:
   _raw:
@@ -264,6 +289,10 @@ outlines:
     - what: circle
       where: [non_slip]
       radius: 4.1
+  _stand:
+    - what: circle
+      where: [stand]
+      radius: 2
 pcbs:
   simple34_v2:
     template: kicad8
@@ -437,6 +466,9 @@ cases:
     - name: _heat_inserts
       extrude: 2
       shift: [0, 0, 2]
+    - name: _stand
+      extrude: 2
+      shift: [0, 0, 2]
     - operation: subtract
       name: _non_slip
       extrude: 1
@@ -452,6 +484,9 @@ cases:
       extrude: 2
       shift: [0, 0, 3.6]
     - name: _heat_inserts
+      extrude: 2
+      shift: [0, 0, 1.6]
+    - name: _stand
       extrude: 2
       shift: [0, 0, 1.6]
     - operation: subtract

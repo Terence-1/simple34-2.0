@@ -318,7 +318,35 @@ def make_part_left_3__stand():
     result = result.translate((0, 0, 2))
     return result
 
-def make_part_left_4__heat_inserts_negative_a():
+def make_part_left_4__non_slip_a():
+    result = None
+    _s = cq.Workplane("XY").moveTo(38.597181, -62.809588).circle(4.100000).extrude(1)
+    result = _s if result is None else result.union(_s)
+    _s = cq.Workplane("XY").moveTo(83.922991, -42.638813).circle(4.100000).extrude(1)
+    result = _s if result is None else result.union(_s)
+    _s = cq.Workplane("XY").moveTo(123.672991, -48.588813).circle(4.100000).extrude(1)
+    result = _s if result is None else result.union(_s)
+    _s = cq.Workplane("XY").moveTo(142.422991, -66.088813).circle(4.100000).extrude(1)
+    result = _s if result is None else result.union(_s)
+    _s = cq.Workplane("XY").moveTo(135.002082, -117.484433).circle(4.100000).extrude(1)
+    result = _s if result is None else result.union(_s)
+    _s = cq.Workplane("XY").moveTo(83.922991, -104.388813).circle(4.100000).extrude(1)
+    result = _s if result is None else result.union(_s)
+    return result
+
+def make_part_left_4__non_slip_b():
+    result = None
+    _s = cq.Workplane("XY").moveTo(44.442451, -104.400847).circle(4.100000).extrude(1)
+    result = _s if result is None else result.union(_s)
+    return result
+
+def make_part_left_4__non_slip():
+    a = make_part_left_4__non_slip_a()
+    b = make_part_left_4__non_slip_b()
+    result = a.union(b)
+    return result
+
+def make_part_left_5__heat_inserts_negative_a():
     result = None
     _s = cq.Workplane("XY").moveTo(93.422991, -42.588813).circle(1.500000).extrude(3)
     result = _s if result is None else result.union(_s)
@@ -328,15 +356,15 @@ def make_part_left_4__heat_inserts_negative_a():
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_4__heat_inserts_negative_b():
+def make_part_left_5__heat_inserts_negative_b():
     result = None
     _s = cq.Workplane("XY").moveTo(112.472991, -61.638813).circle(1.500000).extrude(3)
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_4__heat_inserts_negative():
-    a = make_part_left_4__heat_inserts_negative_a()
-    b = make_part_left_4__heat_inserts_negative_b()
+def make_part_left_5__heat_inserts_negative():
+    a = make_part_left_5__heat_inserts_negative_a()
+    b = make_part_left_5__heat_inserts_negative_b()
     result = a.union(b)
     result = result.translate((0, 0, 1.2))
     return result
@@ -351,8 +379,10 @@ def make_case_left():
     result = result.union(_part_2)
     _part_3 = make_part_left_3__stand()
     result = result.union(_part_3)
-    _part_4 = make_part_left_4__heat_inserts_negative()
+    _part_4 = make_part_left_4__non_slip()
     result = result.cut(_part_4)
+    _part_5 = make_part_left_5__heat_inserts_negative()
+    result = result.cut(_part_5)
     return result
 
 def make_case():

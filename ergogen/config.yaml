@@ -161,6 +161,46 @@ points:
       anchor:
         ref: [tenting_puck]
         shift: [skt, 0]
+
+    non_slip_top_left: &non_slip
+      anchor:
+        ref: matrix_pinky_top
+        shift: [-0.25kx, 0.25cy]
+      key:
+        tags:
+          - non_slip
+        height: 0
+        width: 0
+    non_slip_top_middle:
+      <<: *non_slip
+      anchor:
+        ref: matrix_middle_top
+        shift: [0, 0.25cy]
+    non_slip_top_right: 
+      <<: *non_slip
+      anchor:
+        ref: matrix_inner_top
+        shift: [0.25kx, 0.25cy]
+    non_slip_mcu:
+      <<: *non_slip
+      anchor:
+        ref: [mcu]
+        shift: [0.5px-0.25cx, 0.5py-0.25cy]
+    non_slip_bottom_right: 
+      <<: *non_slip
+      anchor:
+        ref: thumb_second_only
+        shift: [0.25kx, -0.25ky]
+    non_slip_bottom_middle:
+      <<: *non_slip 
+      anchor:
+        ref: matrix_middle_bottom
+        shift: [0, -0.5cy-15]
+    non_slip_bottom_left:
+      <<: *non_slip
+      anchor:
+        ref: matrix_pinky_bottom
+        shift: [-0.25kx, -0.25ky]
         
     stand1: &stand
       anchor:
@@ -245,6 +285,10 @@ outlines:
     - what: circle
       where: [screws]
       radius: 1.5
+  _non_slip:
+    - what: circle
+      where: [non_slip]
+      radius: 4.1
   _stand:
     - what: circle
       where: [stand]
@@ -429,6 +473,9 @@ cases:
       extrude: 2
       shift: [0, 0, 2]
     - operation: subtract
+      name: _non_slip
+      extrude: 1
+    - operation: subtract
       name: _heat_inserts_negative
       extrude: 3
       shift: [0, 0, 1.2]
@@ -445,6 +492,10 @@ cases:
     - name: _stand
       extrude: 2
       shift: [0, 0, 1.6]
+    - operation: subtract
+      name: _non_slip
+      extrude: 1
+      shift: [0, 0, 4.6]
     - operation: subtract
       name: _heat_inserts_negative
       extrude: 3

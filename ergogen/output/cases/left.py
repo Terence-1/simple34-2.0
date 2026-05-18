@@ -5,43 +5,6 @@ import cadquery as cq
 import math
 import pathlib
 
-def _outer_wire_edges(result, selector):
-    edges = []
-    for face in result.faces(selector).vals():
-        edges.extend(face.outerWire().Edges())
-    return edges
-
-def _inner_wire_edges(result, selector):
-    edges = []
-    for face in result.faces(selector).vals():
-        for wire in face.innerWires():
-            edges.extend(wire.Edges())
-    return edges
-
-def _apply_edge_treatment(result, part_name, operation_name, operation, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
-    for selector, outer_value, inner_value in (("<Z", outer_bottom, inner_bottom), (">Z", outer_top, inner_top)):
-        if outer_value:
-            edges = _outer_wire_edges(result, selector)
-            if edges:
-                try:
-                    result = operation(result.newObject(edges), outer_value)
-                except Exception as exc:
-                    raise RuntimeError(f"{operation_name} failed on {part_name} outer {selector} edges with value {outer_value}") from exc
-        if inner_value:
-            edges = _inner_wire_edges(result, selector)
-            if edges:
-                try:
-                    result = operation(result.newObject(edges), inner_value)
-                except Exception as exc:
-                    raise RuntimeError(f"{operation_name} failed on {part_name} inner {selector} edges with value {inner_value}") from exc
-    return result
-
-def _fillet_edges(result, part_name, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
-    return _apply_edge_treatment(result, part_name, "fillet", lambda edges, value: edges.fillet(value), outer_top, outer_bottom, inner_top, inner_bottom)
-
-def _chamfer_edges(result, part_name, outer_top=0, outer_bottom=0, inner_top=0, inner_bottom=0):
-    return _apply_edge_treatment(result, part_name, "chamfer", lambda edges, value: edges.chamfer(value), outer_top, outer_bottom, inner_top, inner_bottom)
-
 def make_part_left_0__wall_a():
     edges = []
     edges.append(cq.Edge.makeThreePointArc(
@@ -272,7 +235,40 @@ def make_part_left_1__base():
     result = cq.Workplane("XY").add(_solid_0)
     return result
 
-def make_part_left_2__heat_inserts_a():
+def make_part_left_2__mcu_cutout_a():
+    result = cq.Workplane("XY")
+    return result
+
+def make_part_left_2__mcu_cutout_b():
+    edges = []
+    edges.append(cq.Edge.makeLine(
+        cq.Vector(129.722991, -78.338813, 0),
+        cq.Vector(147.122991, -78.338813, 0)
+    ))
+    edges.append(cq.Edge.makeLine(
+        cq.Vector(147.122991, -78.338813, 0),
+        cq.Vector(147.122991, -45.338813, 0)
+    ))
+    edges.append(cq.Edge.makeLine(
+        cq.Vector(147.122991, -45.338813, 0),
+        cq.Vector(129.722991, -45.338813, 0)
+    ))
+    edges.append(cq.Edge.makeLine(
+        cq.Vector(129.722991, -45.338813, 0),
+        cq.Vector(129.722991, -78.338813, 0)
+    ))
+    _wire_0 = cq.Wire.assembleEdges(edges)
+    _face_0 = cq.Face.makeFromWires(_wire_0)
+    _solid_0 = cq.Solid.extrudeLinear(_face_0, cq.Vector(0, 0, 3.6))
+    result = cq.Workplane("XY").add(_solid_0)
+    return result
+
+def make_part_left_2__mcu_cutout():
+    result = make_part_left_2__mcu_cutout_b()
+    result = result.translate((0, 0, 2))
+    return result
+
+def make_part_left_3__heat_inserts_a():
     result = None
     _s = cq.Workplane("XY").moveTo(93.422991, -42.588813).circle(2.500000).extrude(2)
     result = _s if result is None else result.union(_s)
@@ -282,20 +278,20 @@ def make_part_left_2__heat_inserts_a():
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_2__heat_inserts_b():
+def make_part_left_3__heat_inserts_b():
     result = None
     _s = cq.Workplane("XY").moveTo(112.472991, -61.638813).circle(2.500000).extrude(2)
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_2__heat_inserts():
-    a = make_part_left_2__heat_inserts_a()
-    b = make_part_left_2__heat_inserts_b()
+def make_part_left_3__heat_inserts():
+    a = make_part_left_3__heat_inserts_a()
+    b = make_part_left_3__heat_inserts_b()
     result = a.union(b)
     result = result.translate((0, 0, 2))
     return result
 
-def make_part_left_3__stand_a():
+def make_part_left_4__stand_a():
     result = None
     _s = cq.Workplane("XY").moveTo(53.795121, -64.965424).circle(2.000000).extrude(2)
     result = _s if result is None else result.union(_s)
@@ -305,20 +301,20 @@ def make_part_left_3__stand_a():
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_3__stand_b():
+def make_part_left_4__stand_b():
     result = None
     _s = cq.Workplane("XY").moveTo(137.922991, -78.338813).circle(2.000000).extrude(2)
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_3__stand():
-    a = make_part_left_3__stand_a()
-    b = make_part_left_3__stand_b()
+def make_part_left_4__stand():
+    a = make_part_left_4__stand_a()
+    b = make_part_left_4__stand_b()
     result = a.union(b)
     result = result.translate((0, 0, 2))
     return result
 
-def make_part_left_4__non_slip_a():
+def make_part_left_5__non_slip_a():
     result = None
     _s = cq.Workplane("XY").moveTo(38.597181, -62.809588).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
@@ -334,19 +330,19 @@ def make_part_left_4__non_slip_a():
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_4__non_slip_b():
+def make_part_left_5__non_slip_b():
     result = None
     _s = cq.Workplane("XY").moveTo(44.442451, -104.400847).circle(4.100000).extrude(1)
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_4__non_slip():
-    a = make_part_left_4__non_slip_a()
-    b = make_part_left_4__non_slip_b()
+def make_part_left_5__non_slip():
+    a = make_part_left_5__non_slip_a()
+    b = make_part_left_5__non_slip_b()
     result = a.union(b)
     return result
 
-def make_part_left_5__heat_inserts_negative_a():
+def make_part_left_6__heat_inserts_negative_a():
     result = None
     _s = cq.Workplane("XY").moveTo(93.422991, -42.588813).circle(1.500000).extrude(3)
     result = _s if result is None else result.union(_s)
@@ -356,33 +352,34 @@ def make_part_left_5__heat_inserts_negative_a():
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_5__heat_inserts_negative_b():
+def make_part_left_6__heat_inserts_negative_b():
     result = None
     _s = cq.Workplane("XY").moveTo(112.472991, -61.638813).circle(1.500000).extrude(3)
     result = _s if result is None else result.union(_s)
     return result
 
-def make_part_left_5__heat_inserts_negative():
-    a = make_part_left_5__heat_inserts_negative_a()
-    b = make_part_left_5__heat_inserts_negative_b()
+def make_part_left_6__heat_inserts_negative():
+    a = make_part_left_6__heat_inserts_negative_a()
+    b = make_part_left_6__heat_inserts_negative_b()
     result = a.union(b)
     result = result.translate((0, 0, 1.2))
     return result
 
 def make_case_left():
     _part_0 = make_part_left_0__wall()
-    _part_0 = _fillet_edges(_part_0, "_part_0", 1, 1, 0, 0)
     result = _part_0
     _part_1 = make_part_left_1__base()
     result = result.union(_part_1)
-    _part_2 = make_part_left_2__heat_inserts()
-    result = result.union(_part_2)
-    _part_3 = make_part_left_3__stand()
+    _part_2 = make_part_left_2__mcu_cutout()
+    result = result.cut(_part_2)
+    _part_3 = make_part_left_3__heat_inserts()
     result = result.union(_part_3)
-    _part_4 = make_part_left_4__non_slip()
-    result = result.cut(_part_4)
-    _part_5 = make_part_left_5__heat_inserts_negative()
+    _part_4 = make_part_left_4__stand()
+    result = result.union(_part_4)
+    _part_5 = make_part_left_5__non_slip()
     result = result.cut(_part_5)
+    _part_6 = make_part_left_6__heat_inserts_negative()
+    result = result.cut(_part_6)
     return result
 
 def make_case():

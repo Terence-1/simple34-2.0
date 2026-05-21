@@ -1,4 +1,4 @@
 # simple34 2.0
-another wireless only 34 key split keyboard using my old matrix setup with splay inspired by tempest
+another wireless only 34 key split keyboard using my old matrix setup with splay.
 
-**REQUIRES THIS FORK OF ERGOGEN TO GENERATE THE CASES https://github.com/Terence-1/ergogen**
+Inspired by: Ferris sweep and tempest
